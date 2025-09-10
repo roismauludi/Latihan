@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 03 Sep 2025 pada 03.50
+-- Waktu pembuatan: 10 Sep 2025 pada 03.26
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.3.25
 
@@ -34,6 +34,7 @@ CREATE TABLE `user` (
   `jurusan` varchar(100) NOT NULL,
   `prodi` varchar(100) NOT NULL,
   `kelas` varchar(20) NOT NULL,
+  `email` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `update_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -42,13 +43,13 @@ CREATE TABLE `user` (
 -- Dumping data untuk tabel `user`
 --
 
-INSERT INTO `user` (`id`, `nim`, `nama`, `jurusan`, `prodi`, `kelas`, `created_at`, `update_at`) VALUES
-(1, '2021002', 'Siti Nurhaliza', 'Sistem Informasi', 'S1 Sistem Informasi', '3B Pagi', '2025-08-28 04:16:31', '2025-09-02 03:39:15'),
-(2, '2021003', 'Budi Santoso', 'Teknik Komputer', 'S1 Teknik Komputer', '1C Siang', '2025-08-28 04:16:31', '2025-09-02 03:39:15'),
-(3, '2021004', 'Dewi Sartika', 'Manajemen Informatika', 'D3 Manajemen Informatika', '5D Malam', '2025-08-28 04:16:31', '2025-09-02 03:39:15'),
-(4, '2021005', 'Rudi Hermawan', 'Teknik Informatika', 'S1 Teknik Informatika', '2A Pagi', '2025-08-28 04:16:31', '2025-09-02 03:39:15'),
-(5, '4342211011', 'Muhammad Rois', 'Teknik Informatika', 'S1 Teknik Informatika', '7A Malam', '2025-08-28 04:16:44', '2025-09-02 03:39:15'),
-(6, '4342211019', 'Fransiskus', 'Teknik Informatika', 'S1 Sistem Informasi', '7A Malam', '2025-08-28 09:13:12', '2025-09-02 03:39:15');
+INSERT INTO `user` (`id`, `nim`, `nama`, `jurusan`, `prodi`, `kelas`, `email`, `created_at`, `update_at`) VALUES
+(2, '4342211016', 'Budi Santoso', 'Teknik Komputer', 'S1 Teknik Komputer', '1C Siang', 'budi1CSiang@gmail.com', '2025-08-28 04:16:31', '2025-09-10 01:25:45'),
+(3, '4342211018', 'Dewi Sartika', 'Manajemen Informatika', 'D3 Manajemen Informatika', '5D Malam', 'Dewi5DMalam@gmail.com', '2025-08-28 04:16:31', '2025-09-10 01:25:45'),
+(4, '4342211020', 'Rudi Hermawan', 'Teknik Informatika', 'S1 Teknik Informatika', '2A Pagi', 'rudi2APagi@gmail.com', '2025-08-28 04:16:31', '2025-09-10 01:25:45'),
+(5, '4342211011', 'Muhammad Rois', 'Teknik Informatika', 'S1 Teknik Informatika', '7A Malam', 'roismauludi72@gmail.com', '2025-08-28 04:16:44', '2025-09-09 07:12:03'),
+(6, '4342211019', 'Fransiskus', 'Teknik Informatika', 'S1 Sistem Informasi', '7A Malam', 'frans7AMalam@gmail.com', '2025-08-28 09:13:12', '2025-09-09 07:03:32'),
+(9, '4342211012', 'Budiono', 'Teknik Elektro', 'S1 Teknik Telekomunikasi', '7A Pagi', 'budiono7APagi@gmail.com', '2025-09-03 01:56:02', '2025-09-09 07:03:32');
 
 --
 -- Indexes for dumped tables
@@ -68,7 +69,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT untuk tabel `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
