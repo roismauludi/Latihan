@@ -11,10 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         switch ($_POST['action']) {
             case 'create':
                 // Validasi input
-                if (empty($_POST['nim']) || empty($_POST['nama']) || empty($_POST['jurusan']) || empty($_POST['prodi']) || empty($_POST['kelas'])) {
+                if (empty($_POST['nim']) || empty($_POST['nama']) || empty($_POST['jurusan']) || empty($_POST['prodi']) || empty($_POST['kelas']) || empty($_POST['email'])) {
                     $error = "Semua field harus diisi!";
                 } elseif (!preg_match('/^\d+$/', $_POST['nim'])) {
                     $error = "NIM harus berupa angka!";
+                } elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+                    $error = "Format email tidak valid!";
                 } elseif ($user->checkNimExists($_POST['nim'])) {
                     $error = "NIM sudah terdaftar!";
                 } else {
@@ -23,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $user->jurusan = $_POST['jurusan'];
                     $user->prodi = $_POST['prodi'];
                     $user->kelas = $_POST['kelas'];
+                    $user->email = $_POST['email'];
                     
                     if ($user->create()) {
                         $message = "Data berhasil ditambahkan!";
@@ -33,10 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 break;
                 
             case 'update':
-                if (empty($_POST['nim']) || empty($_POST['nama']) || empty($_POST['jurusan']) || empty($_POST['prodi']) || empty($_POST['kelas'])) {
+                if (empty($_POST['nim']) || empty($_POST['nama']) || empty($_POST['jurusan']) || empty($_POST['prodi']) || empty($_POST['kelas']) || empty($_POST['email'])) {
                     $error = "Semua field harus diisi!";
                 } elseif (!preg_match('/^\d+$/', $_POST['nim'])) {
                     $error = "NIM harus berupa angka!";
+                } elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+                    $error = "Format email tidak valid!";
                 } elseif ($user->checkNimExists($_POST['nim'], $_POST['id'])) {
                     $error = "NIM sudah terdaftar!";
                 } else {
@@ -46,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $user->jurusan = $_POST['jurusan'];
                     $user->prodi = $_POST['prodi'];
                     $user->kelas = $_POST['kelas'];
+                    $user->email = $_POST['email'];
                     
                     if ($user->update()) {
                         $message = "Data berhasil diupdate!";
@@ -98,10 +104,24 @@ $result = $user->read();
             border-radius: 12px;
         }
         .btn-action {
-            margin: 0 2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .alert {
             border-radius: 8px;
+        }
+        .email-cell {
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .email-plain {
+            color: #212529; /* teks hitam bootstrap */
+        }
+        @media (max-width: 576px) {
+            .email-cell { max-width: 140px; }
         }
     </style>
 </head>
@@ -110,7 +130,7 @@ $result = $user->read();
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
                         <h3 class="mb-0">
                             <i class="fas fa-users me-2"></i>
                             Sistem Informasi Mahasiswa
@@ -187,6 +207,12 @@ $result = $user->read();
                                                    value="<?php echo $edit_user ? $edit_user['kelas'] : ''; ?>" 
                                                    placeholder="Contoh: 7A Malam, 3B Pagi, 1C Siang" required>
                                         </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                            <input type="email" class="form-control" id="email" name="email" 
+                                                   value="<?php echo $edit_user ? htmlspecialchars($edit_user['email']) : ''; ?>" 
+                                                   placeholder="contoh@gmail.com" required>
+                                        </div>
                                     </div>
                                     
                                     <div class="d-flex gap-2">
@@ -206,18 +232,23 @@ $result = $user->read();
 
                         <!-- Data Table -->
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header d-flex align-items-center justify-content-between">
                                 <h5 class="mb-0">
                                     <i class="fas fa-table me-2"></i>
                                     Data Mahasiswa
                                 </h5>
-                                <a href="export.php" class="btn btn-success btn-sm float-end" title="Export Data">
-                                <i class="fas fa-file-export me-1"></i>Export Data
-                                </a>
+                                <div class="float-end">
+                                    <a href="export.php" class="btn btn-success btn-sm me-2" title="Export Data">
+                                        <i class="fas fa-file-export me-1"></i>Export Data
+                                    </a>
+                                    <a href="email.php" class="btn btn-warning btn-sm" title="Kirim Email">
+                                        <i class="fas fa-envelope me-1"></i>Kirim Email
+                                    </a>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
+                                    <table class="table table-striped table-hover align-middle">
                                         <thead class="table-dark">
                                             <tr>
                                                 <th>No</th>
@@ -226,6 +257,7 @@ $result = $user->read();
                                                 <th>Jurusan</th>
                                                 <th>Program Studi</th>
                                                 <th>Kelas</th>
+                                                <th>Email</th>
                                                 <th>Tanggal Dibuat</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -235,6 +267,7 @@ $result = $user->read();
                                             if (mysqli_num_rows($result) > 0):
                                                 $no = 1;
                                                 while ($row = mysqli_fetch_assoc($result)):
+                                                    $mailto = 'email.php?to_email=' . urlencode($row['email']) . '&subject=' . urlencode('Halo ' . $row['nama']);
                                             ?>
                                                 <tr>
                                                     <td><?php echo $no++; ?></td>
@@ -243,15 +276,29 @@ $result = $user->read();
                                                     <td><?php echo htmlspecialchars($row['jurusan']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['prodi']); ?></td>
                                                     <td><?php echo $row['kelas']; ?></td>
+                                                    <td class="email-cell">
+                                                        <?php if (!empty($row['email'])): ?>
+                                                            <span class="email-plain" title="<?php echo htmlspecialchars($row['email']); ?>">
+                                                                <?php echo htmlspecialchars($row['email']); ?>
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span class="text-muted">-</span>
+                                                        <?php endif; ?>
+                                                    </td>
                                                     <td><?php echo date('d/m/Y H:i', strtotime($row['created_at'])); ?></td>
                                                     <td>
-                                                        <a href="?edit=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning btn-action" title="Edit">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger btn-action" 
-                                                           onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')" title="Hapus">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
+                                                        <div class="d-flex gap-2">
+                                                            <a href="<?php echo $mailto; ?>" class="btn btn-sm btn-info btn-action" title="Kirim Email ke <?php echo htmlspecialchars($row['nama']); ?>">
+                                                                <i class="fas fa-paper-plane"></i>
+                                                            </a>
+                                                            <a href="?edit=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning btn-action" title="Edit">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger btn-action" 
+                                                               onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')" title="Hapus">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             <?php 
@@ -259,7 +306,7 @@ $result = $user->read();
                                             else:
                                             ?>
                                                 <tr>
-                                                    <td colspan="8" class="text-center text-muted">
+                                                    <td colspan="9" class="text-center text-muted">
                                                         <i class="fas fa-inbox me-2"></i>
                                                         Tidak ada data mahasiswa
                                                     </td>
